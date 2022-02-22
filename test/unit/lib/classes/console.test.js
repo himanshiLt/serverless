@@ -1,7 +1,9 @@
 'use strict';
 
 const chai = require('chai');
+const path = require('path');
 const runServerless = require('../../../utils/run-serverless');
+const getRequire = require('../../../../lib/utils/get-require');
 
 // Configure chai
 chai.use(require('chai-as-promised'));
@@ -11,11 +13,23 @@ describe('test/unit/lib/classes/console.test.js', () => {
   describe('enabled', () => {
     let serverless;
     before(async () => {
+      const ServerlessSDKMock = class ServerlessSDK {
+        getOrgByName() {
+          return 'xxxx';
+        }
+      };
       ({ serverless } = await runServerless({
         fixture: 'function',
         command: 'package',
         configExt: { console: true, org: 'testorg' },
         env: { SERVERLESS_ACCESS_KEY: 'dummy' },
+        modulesCacheStub: {
+          [getRequire(path.dirname(require.resolve('@serverless/dashboard-plugin'))).resolve(
+            '@serverless/platform-client'
+          )]: {
+            ServerlessSDK: ServerlessSDKMock,
+          },
+        },
       }));
     });
     it('should enable console with `console: true` and `org` set', () => {
