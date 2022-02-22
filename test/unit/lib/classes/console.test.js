@@ -15,6 +15,7 @@ describe('test/unit/lib/classes/console.test.js', () => {
         fixture: 'function',
         command: 'package',
         configExt: { console: true, org: 'testorg' },
+        env: { SERVERLESS_ACCESS_KEY: 'dummy' },
       }));
     });
     it('should enable console with `console: true` and `org` set', () => {
@@ -28,6 +29,14 @@ describe('test/unit/lib/classes/console.test.js', () => {
         fixture: 'function',
         command: 'package',
         configExt: { org: 'testorg' },
+      });
+      expect(serverless.console.isEnabled).to.be.false;
+    });
+    it('should not enable console when not supported command', async () => {
+      const { serverless } = await runServerless({
+        fixture: 'function',
+        command: 'print',
+        configExt: { console: true, org: 'testorg' },
       });
       expect(serverless.console.isEnabled).to.be.false;
     });
