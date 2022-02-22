@@ -23,6 +23,18 @@ describe('test/unit/lib/classes/console.test.js', () => {
     });
   });
 
+  describe('errors', () => {
+    it('should abort when console enabled but not authenticated', async () => {
+      expect(
+        runServerless({
+          fixture: 'function',
+          command: 'package',
+          configExt: { console: true, org: 'testorg' },
+        })
+      ).to.eventually.be.rejected.and.have.property('code', 'CONSOLE_NOT_AUTHENTICATED');
+    });
+  });
+
   describe('disabled', () => {
     it('should not enable console when no `console: true`', async () => {
       const { serverless } = await runServerless({
